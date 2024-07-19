@@ -22,16 +22,12 @@ class SelectButtonAdapter(
     private var count = 0
 
 
-    fun setItems(items: List<Button>) {
+    fun setItems(items: List<Button>, question: Question) {
         this.items.clear()
         this.items.addAll(items)
-        notifyDataSetChanged()
-    }
-
-    fun setQuestion(question: Question) {
         this.question = question
         this.count = question.answer.length
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, items.size)
     }
 
     inner class ButtonViewHolder(

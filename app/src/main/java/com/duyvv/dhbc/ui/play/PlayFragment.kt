@@ -14,6 +14,7 @@ import com.duyvv.dhbc.domain.Button
 import com.duyvv.dhbc.domain.ButtonType
 import com.duyvv.dhbc.domain.Question
 import com.duyvv.dhbc.ui.play.adapter.AnswerButtonAdapter
+import com.duyvv.dhbc.ui.play.adapter.CustomLayoutManager
 import com.duyvv.dhbc.ui.play.adapter.SelectButtonAdapter
 import com.duyvv.dhbc.ui.play.dialog.DialogListener
 import com.duyvv.dhbc.ui.play.dialog.GameOverDialog
@@ -87,9 +88,10 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
                 onSelectAnswer(it)
             }
         )
+
         binding.rcvButtonselect.apply {
             adapter = selectButtonAdapter
-            layoutManager = FlexboxLayoutManager(requireContext()).apply {
+            layoutManager = CustomLayoutManager(requireContext()).apply {
                 justifyContent = JustifyContent.CENTER
             }
         }
@@ -97,7 +99,7 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
         answerButtonAdapter = AnswerButtonAdapter()
         binding.rcvButtonAnswer.apply {
             adapter = answerButtonAdapter
-            layoutManager = FlexboxLayoutManager(requireContext()).apply {
+            layoutManager = CustomLayoutManager(requireContext()).apply {
                 justifyContent = JustifyContent.CENTER
             }
         }
@@ -110,23 +112,16 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
 
             // check answer is full or not
             if (position == items.size) {
+                showResult(true)
                 if (checkAnswerCorrect()) {
-                    showResult(true)
                     binding.tvMessage.text = CORRECT_MESSAGE
                     viewModel.addScore()
                 } else {
-                    showResult(true)
                     binding.tvMessage.text = INCORRECT_MESSAGE
                     viewModel.decreaseHeart()
                 }
             }
         }
-    }
-
-    private fun restartGame() {
-        viewModel.restartGame()
-        resetUI()
-        nextQuestion()
     }
 
     private fun nextQuestion() {
@@ -144,13 +139,11 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
             binding.imgQuestion.setImageResource(question.resourceImg)
 
             selectButtonAdapter.apply {
-                setItems(generateSelectButtons(question))
-                setQuestion(question)
+                setItems(generateSelectButtons(question), question)
             }
 
             answerButtonAdapter.apply {
-                setItems(generateAnswerButtons(question))
-                setQuestion(question)
+                setItems(generateAnswerButtons(question), question)
             }
         }
     }
@@ -183,7 +176,9 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
     }
 
     override fun onRestartGame() {
-        restartGame()
+        viewModel.restartGame()
+        resetUI()
+        nextQuestion()
     }
 
     override fun onExitGame() {

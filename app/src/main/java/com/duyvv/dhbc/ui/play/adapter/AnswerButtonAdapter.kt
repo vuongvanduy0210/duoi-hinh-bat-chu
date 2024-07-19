@@ -21,27 +21,23 @@ class AnswerButtonAdapter : RecyclerView.Adapter<AnswerButtonAdapter.ButtonViewH
     var position = 0
 
 
-    fun setItems(items: List<Button>) {
+    fun setItems(items: List<Button>, question: Question) {
         this.items.clear()
         this.items.addAll(items)
         position = 0
-        notifyDataSetChanged()
+        this.question = question
+        notifyItemRangeChanged(0, items.size)
     }
 
     fun changeType(buttonType: ButtonType) {
         this.buttonType = buttonType
-        notifyDataSetChanged()
-    }
-
-    fun setQuestion(question: Question) {
-        this.question = question
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, items.size)
     }
 
     fun addAnswerChar(char: String) {
         items[position].body = char
+        notifyItemChanged(position)
         position += 1
-        notifyDataSetChanged()
     }
 
     fun checkAnswerCorrect(): Boolean {
