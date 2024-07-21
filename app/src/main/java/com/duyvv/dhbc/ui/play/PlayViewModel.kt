@@ -22,7 +22,7 @@ class PlayViewModel : ViewModel() {
 
     fun initQuestions() {
         listQuestions.addAll(
-            mutableListOf(
+            listOf(
                 Question(R.drawable.aomua, "AOMUA"),
                 Question(R.drawable.baocao, "BAOCAO"),
                 Question(R.drawable.canthiep, "CANTHIEP"),
