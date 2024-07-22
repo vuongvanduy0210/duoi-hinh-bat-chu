@@ -2,6 +2,8 @@ package com.duyvv.dhbc.ui.play
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
@@ -21,9 +23,7 @@ import com.duyvv.dhbc.ui.play.dialog.GameOverDialog
 import com.duyvv.dhbc.ui.play.dialog.VictoryDialog
 import com.duyvv.dhbc.utils.CORRECT_MESSAGE
 import com.duyvv.dhbc.utils.INCORRECT_MESSAGE
-import com.duyvv.firstlesson.base.BaseFragment
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
+import com.duyvv.dhbc.base.BaseFragment
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -56,12 +56,16 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
     }
 
     private fun setUp() {
-        setUpRecyclerview()
+        setUpSelectButtons()
 
-        binding.tvNext.setOnClickListener {
-            nextQuestion()
-        }
+        setupAnswerButtons()
 
+        setupEventListener()
+
+        setupEventFlow()
+    }
+
+    private fun setupEventFlow() {
         lifecycleScope.launch {
             viewModel.heart.collect {
                 if (it <= 0) {
@@ -82,26 +86,30 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
         }
     }
 
-    private fun setUpRecyclerview() {
+    private fun setupEventListener() {
+        binding.tvNext.setOnClickListener {
+            nextQuestion()
+        }
+    }
+
+    private fun setupAnswerButtons() {
+        answerButtonAdapter = AnswerButtonAdapter()
+        binding.rcvAnswerButton.apply {
+            adapter = answerButtonAdapter
+            layoutManager = CustomLayoutManager(requireContext())
+        }
+    }
+
+    private fun setUpSelectButtons() {
         selectButtonAdapter = SelectButtonAdapter(
             onItemClicked = {
                 onSelectAnswer(it)
             }
         )
 
-        binding.rcvButtonselect.apply {
+        binding.rcvSelectButtons.apply {
             adapter = selectButtonAdapter
-            layoutManager = CustomLayoutManager(requireContext()).apply {
-                justifyContent = JustifyContent.CENTER
-            }
-        }
-
-        answerButtonAdapter = AnswerButtonAdapter()
-        binding.rcvButtonAnswer.apply {
-            adapter = answerButtonAdapter
-            layoutManager = CustomLayoutManager(requireContext()).apply {
-                justifyContent = JustifyContent.CENTER
-            }
+            layoutManager = CustomLayoutManager(requireContext())
         }
     }
 
@@ -112,13 +120,28 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
 
             // check answer is full or not
             if (position == items.size) {
-                showResult(true)
-                if (checkAnswerCorrect()) {
-                    binding.tvMessage.text = CORRECT_MESSAGE
+                binding.tvMessage.visibility = VISIBLE
+                binding.tvMessage.text = if (checkAnswerCorrect()) {
                     viewModel.addScore()
+                    CORRECT_MESSAGE
                 } else {
-                    binding.tvMessage.text = INCORRECT_MESSAGE
                     viewModel.decreaseHeart()
+                    INCORRECT_MESSAGE
+                }
+
+                if (viewModel.isGameFinished() && viewModel.heart.value > 0) {
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        {
+                            VictoryDialog(
+                                requireContext(),
+                                viewModel.score.value,
+                                this@PlayFragment
+                            ).show()
+                        },
+                        1000
+                    )
+                } else {
+                    binding.tvNext.visibility = VISIBLE
                 }
             }
         }
@@ -126,16 +149,7 @@ class PlayFragment : BaseFragment<FragmentPlayBinding>(), DialogListener {
 
     private fun nextQuestion() {
         resetUI()
-        viewModel.getRandomQuestion().let { question ->
-            if (question == null) {
-                VictoryDialog(
-                    requireContext(),
-                    viewModel.score.value,
-                    this@PlayFragment
-                ).show()
-                return@let
-            }
-
+        viewModel.getRandomQuestion()?.let { question ->
             binding.imgQuestion.setImageResource(question.resourceImg)
 
             selectButtonAdapter.apply {

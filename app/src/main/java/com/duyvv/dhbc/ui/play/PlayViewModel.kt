@@ -65,6 +65,8 @@ class PlayViewModel : ViewModel() {
         return randomQuestion
     }
 
+    fun isGameFinished() = listQuestions.isEmpty()
+
     fun addScore() {
         _score.value += 100
     }

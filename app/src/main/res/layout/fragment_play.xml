@@ -149,7 +149,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:visibility="invisible"
-        android:text="Bạn đã chọn sai đáp án rồi!"
+        tools:text="Bạn đã chọn sai đáp án rồi!"
         android:textColor="@color/white"
         android:textSize="23sp"
         android:textStyle="bold"
@@ -158,7 +158,7 @@
         app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcvButtonAnswer"
+        android:id="@+id/rcvAnswerButton"
         android:layout_width="0dp"
         android:foregroundGravity="center"
         android:layout_height="100dp"
@@ -168,7 +168,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvMessage" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcvButtonselect"
+        android:id="@+id/rcvSelectButtons"
         android:foregroundGravity="center"
         android:layout_width="0dp"
         android:layout_height="100dp"

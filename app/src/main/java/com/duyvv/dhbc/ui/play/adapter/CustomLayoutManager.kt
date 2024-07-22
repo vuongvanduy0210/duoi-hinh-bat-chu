@@ -6,6 +6,10 @@ import com.google.android.flexbox.JustifyContent
 
 class CustomLayoutManager(context: Context) : FlexboxLayoutManager(context) {
 
+    init {
+        justifyContent = JustifyContent.CENTER
+    }
+
     override fun canScrollVertically(): Boolean {
         return false
     }

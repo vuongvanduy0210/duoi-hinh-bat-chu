@@ -1,7 +1,7 @@
 package com.duyvv.dhbc.ui.play
 
 import com.duyvv.dhbc.databinding.ActivityPlayBinding
-import com.duyvv.firstlesson.base.BaseActivity
+import com.duyvv.dhbc.base.BaseActivity
 
 class PlayActivity : BaseActivity<ActivityPlayBinding>() {
 

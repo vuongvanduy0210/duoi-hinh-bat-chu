@@ -3,7 +3,7 @@ package com.duyvv.dhbc.ui
 import android.content.Intent
 import com.duyvv.dhbc.databinding.ActivityMainBinding
 import com.duyvv.dhbc.ui.play.PlayActivity
-import com.duyvv.firstlesson.base.BaseActivity
+import com.duyvv.dhbc.base.BaseActivity
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
